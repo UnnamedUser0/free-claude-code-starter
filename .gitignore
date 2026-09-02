@@ -1,0 +1,28 @@
+# Secrets and Environment Variables
+.env
+*.env
+*.env.local
+
+# Node and Dependencies
+node_modules/
+package-lock.json
+
+# Logs and Diagnostics
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# Claude Code and Cache
+.claude/
+.fcc/
+cache/
+sessions/
+shell-snapshots/
+backups/
+
+# Operating System Files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
