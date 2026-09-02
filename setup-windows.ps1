@@ -1,14 +1,15 @@
 <#
 .SYNOPSIS
-    Script automatizado de instalación y verificación para Free Claude Code en Windows.
+    Script automatizado de instalación y verificación para Free Claude Code (Tier-0) en Windows.
 .DESCRIPTION
-    Verifica Node.js, Python, Git, instala Hermes, free-claude-code, Playwright y prepara las carpetas.
+    Verifica Node.js, Python, Git, instala Hermes, free-claude-code, Playwright y prepara las carpetas
+    con soporte para Groq, Google AI Studio y NVIDIA NIM.
 #>
 
 $ErrorActionPreference = "Stop"
 
 Write-Host "=========================================================" -ForegroundColor Cyan
-Write-Host "  Instalador Automatizado: Free Claude Code Starter Kit  " -ForegroundColor Cyan
+Write-Host "  Instalador Automatizado: Free Claude Code Tier-0       " -ForegroundColor Cyan
 Write-Host "=========================================================" -ForegroundColor Cyan
 
 # 1. Verificar Prerrequisitos
@@ -45,7 +46,7 @@ if (-not (Test-Command "hermes")) {
     Write-Host "  ✓ Hermes ya está instalado." -ForegroundColor Green
 }
 
-# Actualizar PATH
+# Actualizar PATH de la sesión
 $env:Path = [Environment]::GetEnvironmentVariable('LOCALAPPDATA') + '\hermes\bin;' + [Environment]::GetEnvironmentVariable('USERPROFILE') + '\.local\bin;' + $env:Path
 
 # 3. Instalar free-claude-code
@@ -75,7 +76,7 @@ if (-not (Test-Path $fccDir)) {
 $targetEnv = Join-Path $fccDir ".env"
 if (-not (Test-Path $targetEnv)) {
     Copy-Item ".env.example" $targetEnv
-    Write-Host "  ✓ Archivo creado: $targetEnv (Edítalo con tus API Keys)" -ForegroundColor Green
+    Write-Host "  ✓ Archivo creado: $targetEnv (Edítalo con tus API Keys de Google, Groq y NVIDIA)" -ForegroundColor Green
 } else {
     Write-Host "  ✓ Archivo $targetEnv ya existía (no se sobreescribió)." -ForegroundColor Cyan
 }
@@ -93,9 +94,9 @@ if (-not (Test-Path $targetClaudeMd)) {
 }
 
 Write-Host "`n=========================================================" -ForegroundColor Green
-Write-Host "  ¡Instalación completada con éxito!                    " -ForegroundColor Green
+Write-Host "  ¡Instalación Tier-0 completada con éxito!             " -ForegroundColor Green
 Write-Host "=========================================================" -ForegroundColor Green
 Write-Host "Pasos siguientes:"
-Write-Host "1. Abre $targetEnv y coloca tus API Keys."
+Write-Host "1. Abre $targetEnv y coloca tus claves (Google, Groq, NVIDIA)."
 Write-Host "2. Ejecuta 'fcc-server' en una terminal para iniciar el proxy."
-Write-Host "3. Ejecuta 'fcc-claude' en tu carpeta de proyecto para programar."
+Write-Host "3. Ejecuta 'fcc-claude' en tu carpeta de proyecto para programar a máxima potencia."
