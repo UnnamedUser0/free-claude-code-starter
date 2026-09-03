@@ -1,15 +1,15 @@
 <#
 .SYNOPSIS
-    Script automatizado de instalación y verificación para Free Claude Code (Tier-0) en Windows.
+    Script automatizado de instalación y verificación para Free Claude Code (Pro Architecture) en Windows.
 .DESCRIPTION
-    Verifica Node.js, Python, Git, instala Hermes, free-claude-code, Playwright y prepara las carpetas
-    con soporte para Groq, Google AI Studio y NVIDIA NIM.
+    Verifica Node.js, Python, Git, instala Hermes, free-claude-code, Playwright Chromium y prepara las carpetas
+    con soporte para NVIDIA NIM Nemotron 120B, Google AI Studio y Groq.
 #>
 
 $ErrorActionPreference = "Stop"
 
 Write-Host "=========================================================" -ForegroundColor Cyan
-Write-Host "  Instalador Automatizado: Free Claude Code Tier-0       " -ForegroundColor Cyan
+Write-Host "  Instalador Automatizado: Free Claude Code Pro          " -ForegroundColor Cyan
 Write-Host "=========================================================" -ForegroundColor Cyan
 
 # 1. Verificar Prerrequisitos
@@ -76,7 +76,7 @@ if (-not (Test-Path $fccDir)) {
 $targetEnv = Join-Path $fccDir ".env"
 if (-not (Test-Path $targetEnv)) {
     Copy-Item ".env.example" $targetEnv
-    Write-Host "  ✓ Archivo creado: $targetEnv (Edítalo con tus API Keys de Google, Groq y NVIDIA)" -ForegroundColor Green
+    Write-Host "  ✓ Archivo creado: $targetEnv (Edítalo con tus API Keys de NVIDIA, Google y Groq)" -ForegroundColor Green
 } else {
     Write-Host "  ✓ Archivo $targetEnv ya existía (no se sobreescribió)." -ForegroundColor Cyan
 }
@@ -94,9 +94,9 @@ if (-not (Test-Path $targetClaudeMd)) {
 }
 
 Write-Host "`n=========================================================" -ForegroundColor Green
-Write-Host "  ¡Instalación Tier-0 completada con éxito!             " -ForegroundColor Green
+Write-Host "  ¡Instalación Pro completada con éxito!                 " -ForegroundColor Green
 Write-Host "=========================================================" -ForegroundColor Green
 Write-Host "Pasos siguientes:"
-Write-Host "1. Abre $targetEnv y coloca tus claves (Google, Groq, NVIDIA)."
-Write-Host "2. Ejecuta 'fcc-server' en una terminal para iniciar el proxy."
-Write-Host "3. Ejecuta 'fcc-claude' en tu carpeta de proyecto para programar a máxima potencia."
+Write-Host "1. Abre $targetEnv y coloca tus claves (NVIDIA NIM, Google AI Studio, Groq)."
+Write-Host "2. Ejecuta '.\iniciar-todo.ps1' para arrancar el proxy y Claude Code en modo autónomo."
+Write-Host "3. O pasa una tarea directa: '.\iniciar-todo.ps1 -p ""tu tarea aquí""'"
