@@ -44,9 +44,21 @@ goto check_health
 echo [3/3] Iniciando Claude Code en modo autonomo...
 echo =========================================================
 
-:: 4. Verificar si se pasaron argumentos de permisos
-set "ARGS=%*"
-echo %ARGS% | findstr /i "dangerously-skip-permissions permission-mode" >nul 2>&1
+:: 4. Verificar si el usuario solicito Modo Estandar (que pida confirmacion)
+echo %* | findstr /i "\-\-safe \-\-ask \-\-standard" >nul 2>&1
+if %errorlevel% equ 0 (
+    set "CLEAN_ARGS=%*"
+    set "CLEAN_ARGS=!CLEAN_ARGS:--safe=!"
+    set "CLEAN_ARGS=!CLEAN_ARGS:--ask=!"
+    set "CLEAN_ARGS=!CLEAN_ARGS:--standard=!"
+    echo [Modo Estandar Activo: Claude Code solicitara confirmacion interactiva]
+    "%FCC_CLAUDE%" !CLEAN_ARGS!
+    exit /b %errorlevel%
+)
+
+:: 5. Modo por defecto: Modo Autonomo (manos libres)
+echo [Modo Autonomo Activo: Ejecucion asincrona sin solicitudes de confirmacion]
+echo %* | findstr /i "dangerously-skip-permissions permission-mode" >nul 2>&1
 if %errorlevel% equ 0 (
     "%FCC_CLAUDE%" %*
 ) else (
