@@ -138,17 +138,30 @@ GROQ_API_KEY=tu_clave_gsk_aqui
 Si necesitas que Claude Code trabaje en una tarea extensa (refactorización completa, suite de pruebas, generación web) sin que se quede detenido solicitando autorización para crear archivos o ejecutar comandos:
 
 ### Opción 1: Lanzador Todo-en-Uno (Recomendado)
-Usa el script incluido en este repositorio:
-```powershell
-.\iniciar-todo.ps1
-```
-Este script levanta el servidor proxy en segundo plano, valida que responda saludablemente en `http://localhost:8082/health` y lanza Claude Code inyectando automáticamente la bandera `--dangerously-skip-permissions`.
+Puedes iniciarlo tanto desde **CMD (Símbolo del sistema)** como desde **PowerShell**:
 
-### Opción 2: Tarea Directa desde Consola
-Puedes pasarle una instrucción directa para que la ejecute de principio a fin y salga al terminar:
-```powershell
-.\iniciar-todo.ps1 -p "Crea una suite de pruebas para el módulo de usuarios y ejecuta pytest"
-```
+* **Desde CMD (Símbolo del sistema):**
+  ```cmd
+  iniciar-todo.bat
+  ```
+* **Desde PowerShell:**
+  ```powershell
+  .\iniciar-todo.ps1
+  ```
+
+Este lanzador arranca el proxy en segundo plano, valida que responda saludablemente en `http://localhost:8082/health` e inicia Claude Code inyectando automáticamente `--dangerously-skip-permissions`.
+
+### Opción 2: Tarea Directa Asíncrona desde Consola
+Puedes pasarle una instrucción directa para que la ejecute de principio a fin de forma autónoma:
+
+* **En CMD:**
+  ```cmd
+  iniciar-todo.bat -p "Crea una suite de pruebas para el módulo de usuarios y ejecuta pytest"
+  ```
+* **En PowerShell:**
+  ```powershell
+  .\iniciar-todo.ps1 -p "Crea una suite de pruebas para el módulo de usuarios y ejecuta pytest"
+  ```
 
 ---
 
