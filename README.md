@@ -40,15 +40,16 @@ El sistema utiliza una topología en cascada con enrutamiento inteligente y conm
 ┌────────────────────────────────────────────────────────────────────────┐
 │                   Servidor Proxy Local (fcc-server)                    │
 │                          Puerto Local: 8082                            │
+│  [Router Inteligente: Código Textual -> Nemotron | Imágenes -> Gemini] │
 │           (Rate Limiting: Ventana Estricta 14 req / 60s)               │
-└───────┬───────────────────────────┼───────────────────────────┬────────┘
-        │                           │                           │
-        ▼ (Primario)                ▼ (Subtareas & Fallback)    ▼ (Opcional)
+└───────┬───────────────────────────┬───────────────────────────┬────────┘
+        │ (Texto/Código/Sonnet)     │ (Visión/Imágenes/Fallback)│ (Opcional)
+        ▼                           ▼                           ▼
  ┌───────────────┐           ┌───────────────┐           ┌───────────────┐
  │  NVIDIA NIM   │           │  GOOGLE AI    │           │   GROQ LPU    │
  │  Nemotron     │           │  Gemini 2.5   │           │ 300 tokens/s  │
  │  Super 120B   │           │  Flash-Lite   │           │ Inferencia de │
- │(Sonnet/Opus)  │           │ (1M Contexto) │           │ baja latencia │
+ │(Sonnet/Opus)  │           │ (Visión + 1M) │           │ baja latencia │
  └───────┬───────┘           └───────┬───────┘           └───────────────┘
          │                           │
          └─────────────┬─────────────┘
@@ -56,8 +57,8 @@ El sistema utiliza una topología en cascada con enrutamiento inteligente y conm
                        ▼
         ┌─────────────────────────────────────────────────────────┐
         │                  Playwright MCP Server                  │
-        │      (Navegación, verificación de consola en vivo       │
-        │         interacciones DOM y capturas de pantalla)       │
+        │       (Navegación, capturas de pantalla, consola        │
+        │        e inspección visual mediante Gemini Multimodal)  │
         └─────────────────────────────────────────────────────────┘
 ```
 
@@ -68,9 +69,10 @@ El sistema utiliza una topología en cascada con enrutamiento inteligente y conm
 | Nivel Claude Code | Anthropic Oficial (De Pago) | Configuración Pro Gratuita | Ventaja Técnica |
 | :--- | :--- | :--- | :--- |
 | **SONNET & OPUS** | Claude 3.5 / 3.7 Sonnet | **NVIDIA NIM `nemotron-3-super-120b-a12b`** | 120.000 Millones de parámetros, respuestas en **0.8 a 1.2 segundos**, compatibilidad total con tool calling y sin cuota restrictiva de 20 RPD. |
+| **VISIÓN MULTIMODAL** | Claude 3.7 Sonnet Vision | **Google `gemini-2.5-flash-lite` (Auto-Router)** | Enrutado dinámico automático de capturas MCP y archivos gráficos a Gemini 2.5 Flash Lite (comprensión visual de UI, canvas y OCR sin costo). |
 | **HAIKU** | Claude 3.5 Haiku | **Google `gemini-2.5-flash-lite`** | Memoria masiva de **1.000.000 de tokens** (elimina el límite de 8k de Groq que arrojaba error 413 Payload Too Large) y cuota de 1.500 RPD. |
 | **FALLBACK RELAY** | Sin respaldo si se cae | **Gemini 2.5 Flash Lite + Gemini 3 Flash Preview** | Si el motor primario experimenta saturación temporal, conmuta en segundo plano de forma instantánea sin interrumpir la sesión. |
-| **AUTONOMÍA** | Pide permisos de forma interactiva | **Modo Autónomo Hands-Free Activo** | Trabaja en tareas largas de forma asíncrona sin bloquearse esperando permisos de terminal o escritura. |
+| **AUTONOMÍA & SEGURIDAD** | Pide confirmación en terminal | **Modo Autónomo Hands-Free + Windows Shield** | Trabaja sin bloquearse con blindaje estricto del sistema operativo (bloquea System32, registro y borrados destructivos). |
 
 ---
 
@@ -127,6 +129,7 @@ GROQ_API_KEY=tu_clave_gsk_aqui
 * **`MODEL_OPUS=nvidia_nim/nvidia/nemotron-3-super-120b-a12b`**
 * **`MODEL_SONNET=nvidia_nim/nvidia/nemotron-3-super-120b-a12b`**
 * **`MODEL_HAIKU=gemini/models/gemini-2.5-flash-lite`**: 1M de tokens para análisis y subtareas.
+* **`MODEL_VISION=gemini/models/gemini-2.5-flash-lite`**: Motor multimodal de visión para capturas de pantalla, diagramas y Canvas.
 * **`MODEL_FALLBACKS=gemini/models/gemini-2.5-flash-lite,gemini/models/gemini-3-flash-preview`**
 * **`PROVIDER_RATE_LIMIT=14`** y **`PROVIDER_RATE_WINDOW=60`**: Control estricto de tasa para evitar bloqueos por peticiones por minuto (HTTP 429).
 * **`FCC_OPEN_BROWSER=false`**: Evita la apertura involuntaria del navegador al iniciar el proxy.
@@ -193,6 +196,8 @@ fcc-claude mcp list
 
 El archivo `CLAUDE.md` desplegado en tu carpeta de usuario contiene salvaguardas que eliminan los fallos comunes de los modelos LLM:
 
+0. **Blindaje de Seguridad del Sistema Operativo Windows (Regla de Oro)**:
+   - Prohibición absoluta de modificar `C:\Windows`, `System32`, el Registro de Windows (`reg add/delete`), Defender, particiones de disco o borrados recursivos destructivos (`Remove-Item -Recurse C:\...`, `rmdir /s /q`). Cualquier comando fuera del espacio de trabajo local es rechazado preventivamente.
 1. **Detección Estricta de Entorno (Anti-Alucinación)**:
    - Si no existe un archivo `package.json` en el directorio de trabajo, el modelo tiene **estrictamente prohibido** intentar importar `./node_modules`. Debe utilizar scripts CDN estándar o `<script type="importmap">`.
 2. **Rutas Locales Relativas**:
