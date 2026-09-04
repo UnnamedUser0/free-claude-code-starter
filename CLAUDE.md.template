@@ -68,22 +68,24 @@ You are **STRICTLY PROHIBITED** from generating, proposing, or executing any of 
 **Fundamental Rule: Silence in the console or an exit code of 0 is NECESSARY but NEVER SUFFICIENT proof that a system works.**
 You must prove that the code actually delivers its intended functional behavior across all domains:
 
-### A. Frontend, Visual UI & Canvas (Web)
-1. **DOM & Geometry Presence**:
-   - Verify that primary container elements exist and have non-zero dimensions in the layout:
-     ```javascript
-     const el = document.querySelector('#app, #canvas, main');
-     const rect = el ? el.getBoundingClientRect() : null;
-     // rect.width > 0 && rect.height > 0
-     ```
-2. **Graphics & Canvas Rendering (Three.js, WebGL, 2D Canvas)**:
+### A. Frontend, Visual UI & Canvas (Web / 3D / WebGL)
+1. **The Anti-Dev-Server-Trap (Compiler Verification is MANDATORY)**:
+   - Starting a development server (`npm run dev`, `vite`, `next dev`) and seeing `ready in X ms` or an open port **DOES NOT PROVE that the code builds or runs**!
+   - Dev servers compile on-demand when visited by a browser. They will show "ready" even if every file has catastrophic TypeScript or syntax errors.
+   - **You are STRICTLY FORBIDDEN from declaring completion based on dev server startup.**
+   - You MUST run the real build command: `npm run build` or `npx tsc -b`. The exit code must be `0` with ZERO compiler or TypeScript errors.
+2. **Mandatory Playwright MCP Visual & Console Audit**:
+   - For all frontend, WebGL, Three.js, Canvas, and interactive UI tasks, you MUST open the live application in the browser using Playwright MCP:
+     - Call `playwright_navigate` with the local URL (e.g., `http://localhost:5173`).
+     - Call `playwright_screenshot` to visually inspect the rendered screen. Verify that the canvas is actively rendering graphics and is NOT black, blank, or frozen.
+     - Inspect browser console logs to confirm there are zero unhandled runtime exceptions (`THREE is not defined`, shader compile errors, missing imports).
+3. **DOM & Geometry Presence**:
+   - Verify that primary container elements exist and have non-zero dimensions in the layout (`rect.width > 0 && rect.height > 0`).
+4. **Graphics & Canvas Rendering (Three.js, WebGL, 2D Canvas)**:
    - Verify the rendering context is active and not lost (`gl.isContextLost() === false`).
    - Confirm the animation loop is running (`requestAnimationFrame` dispatching frames).
-   - Check that the canvas buffer is not entirely black or blank (rendered pixel data exists).
-3. **Console Hygiene**:
-   - Inspect console logs (`limit: 15`). Distinguish fatal exceptions from benign third-party warnings (e.g., CDN production advisories, deprecation notices). Benign notices must not trigger unnecessary repair loops.
-4. **Interactive Verification**:
-   - Use automated interaction (clicks, inputs, hover) via Playwright or synthetic events.
+5. **Interactive Verification**:
+   - Use automated interaction (clicks, inputs, hover) via Playwright MCP.
    - Assert that the interaction produces the expected visual or state transition.
 
 ### B. Backend, Microservices & REST/GraphQL APIs
@@ -152,13 +154,19 @@ As a Principal Engineer, you do not stall, panic, or interrogate the user with t
 
 ---
 
-## 🛠️ 5. Surgical Tool Economy & Token Discipline
+## 🛠️ 5. Surgical Tool Economy & Token Discipline (Zero Waste Architecture)
 
-1. **`Edit` Over `Write` (Zero Waste Policy)**:
-   - For bug fixes, logic updates, or style tweaks: **ALWAYS use `Edit`** with precise 5 to 30 line search/replace blocks.
-   - **NEVER** overwrite an entire 200–800 line file with `Write` to fix a localized bug. Overwriting entire files wastes context window, triggers rate limits, and risks hallucinating regressions.
+1. **Mandatory Pre-Read Protocol (Preventing Tool Rejections)**:
+   - In Claude Code runtime, attempting to call `Write` or `Edit` on an existing file WITHOUT first reading it in the session is **IMMEDIATELY REJECTED** with an error (`File has not been read yet. Read it first before writing to it`).
+   - This burns an entire turn step and triggers rate-limiting delays.
+   - **MANDATORY SEQUENCE**: Always `Read` -> Diagnose the exact lines -> `Edit` surgically.
+2. **`Edit` Over `Write` (Zero Waste Policy)**:
+   - For bug fixes, logic updates, prop updates, or style tweaks: **ALWAYS use `Edit`** with precise 5 to 30 line search/replace blocks.
+   - **NEVER** overwrite an entire 100–500 line file with `Write` to fix a localized bug. Overwriting entire files burns thousands of tokens, increases queue wait times, and causes syntax drift/typos.
    - Use `Write` **ONLY** when creating a completely new file from scratch.
-2. **Read Before Edit**:
-   - Always call `Read` on the target file prior to `Edit` to guarantee character-for-character accuracy in `old_string`, including exact whitespace and indentation.
-3. **Execution Breaker**:
-   - Limit repair iterations to a maximum of 2 attempts per issue. If unresolved after 2 attempts, re-evaluate the macro design.
+3. **Strict Local Relative Paths Only**:
+   - **ALWAYS** use relative paths (`./src/components/...`, `./package.json`).
+   - **NEVER** type absolute Windows paths (e.g. `C:\Users\JESUS\Documents\Mis...`). Any typo in path names creates duplicate ghost folders (e.g. `Mis projects`, `Mis projetos`) and breaks imports.
+4. **Execution Circuit-Breaker (Max 2 Attempts)**:
+   - If a build error, test failure, or syntax issue is not resolved after 2 attempts, **STOP IMMEDIATELY**.
+   - Do not loop. Re-read the exact compiler error and target file, isolate the root cause, and apply a 1-line surgical fix.

@@ -30,6 +30,15 @@ while (-not $healthy -and $retries -lt 15) {
 }
 
 if ($healthy) {
+    # Garantizar directivas maestras en el directorio de trabajo
+    if (-not (Test-Path "CLAUDE.md")) {
+        $globalClaude = Join-Path $HOME ".claude\CLAUDE.md"
+        if (Test-Path $globalClaude) {
+            Copy-Item $globalClaude "CLAUDE.md"
+            Write-Host "  ✓ Directivas maestras CLAUDE.md sincronizadas en el directorio actual." -ForegroundColor Green
+        }
+    }
+
     # 3. Lanzar Claude Code configurado con el proxy (modo autónomo manos libres)
     Write-Host "[3/3] ¡Proxy activo y saludable! Iniciando Claude Code..." -ForegroundColor Green
     

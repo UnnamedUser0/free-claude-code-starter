@@ -41,6 +41,14 @@ ping -n 2 127.0.0.1 >nul
 goto check_health
 
 :launch_claude
+:: Garantizar directivas de ingenieria CLAUDE.md en el directorio de trabajo
+if not exist "CLAUDE.md" (
+    if exist "%USERPROFILE%\.claude\CLAUDE.md" (
+        copy "%USERPROFILE%\.claude\CLAUDE.md" "CLAUDE.md" >nul 2>&1
+        echo [OK] Directivas maestras CLAUDE.md sincronizadas en el directorio actual.
+    )
+)
+
 echo [3/3] Iniciando Claude Code en modo autonomo...
 echo =========================================================
 
